@@ -1,211 +1,147 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>C.N. Music Studio</title>
 <script src="https://cdn.jsdelivr.net/npm/vexflow@4.2.2/build/cjs/vexflow.js"></script>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
 *{box-sizing:border-box;margin:0;padding:0;font-family:'Inter',sans-serif;-webkit-tap-highlight-color:transparent}
 body{background:#080808;color:#fff;height:100dvh;display:flex;flex-direction:column;overflow:hidden}
-.top{height:56px;background:#111;border-bottom:1px solid #222;display:flex;align-items:center;padding:0 14px;gap:10px;flex:none}
-.logo{font-weight:900;font-size:14px;display:flex;align-items:center;gap:8px}
-.badge{background:#fff;color:#000;padding:4px 8px;border-radius:6px;font-size:10px}
-.btn{height:36px;padding:0 14px;border-radius:10px;border:1px solid #2a2a2a;background:#1a1a1a;color:#fff;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap}
-.btn.primary{background:#fff;color:#000}.btn.ai{background:#4a3cff;border-color:#4a3cff;color:#fff}
+.top{height:56px;background:#111;border-bottom:1px solid #222;display:flex;align-items:center;padding:0 12px;gap:8px;flex:none}
+.badge{background:#fff;color:#000;padding:4px 8px;border-radius:6px;font-size:10px;font-weight:900}
+.btn{height:36px;padding:0 14px;border-radius:10px;border:1px solid #2a2a2a;background:#1a1a1a;color:#fff;font-size:12px;font-weight:600;cursor:pointer}
+.btn.primary{background:#fff;color:#000}.btn.ai{background:#4a3cff;border-color:#4a3cff}
 .workspace{flex:1;display:flex;overflow:hidden;min-height:0}
-.sidebar{width:280px;background:#111;border-right:1px solid #222;display:flex;flex-direction:column;gap:12px;padding:12px;overflow-y:auto}
-.label{font-size:10px;color:#666;letter-spacing:1px;font-weight:600;text-transform:uppercase}
-.input{height:36px;background:#1a1a1a;border:1px solid #222;border-radius:10px;padding:0 10px;color:#fff;font-size:12px;outline:none;width:100%}
-.main{flex:1;display:flex;flex-direction:column;min-width:0;min-height:0;background:#0a0a0a}
-.controls{display:flex;gap:8px;padding:10px 12px;border-bottom:1px solid #1a1a1a;overflow-x:auto;scrollbar-width:none;flex:none}
-.controls::-webkit-scrollbar{display:none}
-.seq-wrap{flex:1;overflow:auto;position:relative}
-.sequencer{display:grid;gap:1px;background:#1e1e1e;width:max-content;min-width:100%}
-.cell-label{position:sticky;left:0;z-index:3;background:#111;border-right:1px solid #1e1e1e;padding:0 8px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
-.cell{width:46px;height:42px;background:#151515;cursor:pointer;display:flex;align-items:center;justify-content:center}
-.cell.active{background:#4a3cff}.cell.active::after{content:"";width:16px;height:16px;background:#fff;border-radius:4px}
-.cell.playhead{box-shadow:inset 0 0 0 2px #fff;background:#2a2a2a}
-.piano{display:flex;gap:1px;padding:8px;background:#111;border-top:1px solid #222;overflow-x:auto;flex:none;scrollbar-width:none}
-.piano::-webkit-scrollbar{display:none}
-.key{flex:0 0 56px;height:72px;background:#fff;border-radius:0 0 8px 8px;color:#000;font-size:10px;font-weight:800;display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;cursor:pointer}
-.key:active{background:#4a3cff;color:#fff;transform:scale(.97)}
-.bottom{display:none}
-#overlayView{position:absolute;inset:56px 0 0 0;background:#080808;z-index:20;display:none;flex-direction:column;overflow:auto}
-#staff{background:#fff;border-radius:12px;margin:12px;padding:12px}
+.left{width:280px;background:#111;border-right:1px solid #222;padding:12px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;flex:none}
+.label{font-size:10px;color:#666;letter-spacing:1px;font-weight:700}
+.piano{display:flex;gap:1px;height:90px;flex:none}.key{flex:1;background:#fff;border-radius:0 0 6px 6px;cursor:pointer;display:flex;align-items:flex-end;justify-content:center;padding-bottom:4px;color:#000;font-size:9px;font-weight:800}
+.input{width:100%;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:8px;padding:10px;color:#fff;font-size:12px;outline:none}
+.center{flex:1;background:#0a0a0a;display:flex;flex-direction:column;min-width:0;min-height:0}
+.tabs{display:flex;gap:1px;background:#222;height:40px;flex:none}.tab{flex:1;background:#111;border:0;color:#666;font-size:12px;font-weight:600;cursor:pointer}.tab.active{background:#0a0a0a;color:#fff}
+.view{flex:1;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+/* IMPORTANT: scroll uniquement sur la grille, pas sur toute la page */
+.sequencer-scroll{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;background:#0a0a0a}
+.sequencer{display:grid;gap:1px;background:#222;border:1px solid #222;width:max-content;min-width:100%}
+.seq-label{background:#111;padding:6px 4px;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;position:sticky;left:0;z-index:3;border-right:1px solid #222;min-width:56px}
+.seq-head{position:sticky;top:0;z-index:4;background:#0f0f0f;color:#777;min-width:36px;height:26px}
+.seq-head.left{left:0;z-index:5}
+.seq-cell{background:#1a1a1a;min-width:36px;height:38px;cursor:pointer}
+.seq-cell.active{background:#4a3cff}
+.seq-cell.playhead{box-shadow:inset 0 0 0 2px #fff;background:#2a2a2a!important}
+.right{width:280px;background:#111;border-left:1px solid #222;padding:12px;display:flex;flex-direction:column;gap:10px;overflow-y:auto;flex:none}
+#staff{background:#fff;border-radius:12px;padding:12px;min-height:160px;overflow:auto}
 
-@media(max-width:768px){
+@media(max-width:900px){
 .workspace{flex-direction:column}
-.sidebar{width:100%;flex-direction:row;overflow-x:auto;border-right:0;border-bottom:1px solid #222;padding:10px;gap:8px}
-.sidebar>div{flex:0 0 auto;min-width:140px}
-.sidebar.label{display:none}
-.piano{height:88px}
-.cell{width:44px;height:44px}
-.bottom{height:54px;background:#111;border-top:1px solid #222;display:flex;align-items:center;padding:0 8px;gap:6px;flex:none}
-.tab{flex:1;height:38px;background:#1a1a1a;border:0;border-radius:10px;color:#666;font-size:11px;font-weight:700}
-.tab.active{background:#fff;color:#000}
-.top.hide-m{display:none}
+.left,.right{width:100%;flex-direction:row;overflow-x:auto;border:0;border-bottom:1px solid #222;gap:8px}
+.left>div,.right>div{min-width:150px;flex:0 0 auto}
+.seq-cell{min-width:42px;height:44px} /* plus gros au doigt */
+.piano{height:80px;overflow-x:auto}
 }
 </style>
 </head>
 <body>
-<div class="top">
-<div class="logo"><div class="badge">C.N</div> MUSIC STUDIO</div>
-<div style="display:flex;gap:6px;margin-left:auto">
-<button class="btn" onclick="play()" id="playBtn">▶ Play</button>
-<button class="btn hide-m" onclick="clearSeq()">Clear</button>
-<button class="btn primary" onclick="exportWavReal()">⬇ WAV</button>
-</div>
-</div>
+<div class="top"><div style="font-weight:900;display:flex;gap:8px;align-items:center"><div class="badge">C.N</div> MUSIC STUDIO</div><div style="display:flex;gap:6px"><button class="btn" onclick="play()" id="playBtn">▶ Play</button><button class="btn" onclick="stop()">⏹</button><button class="btn" onclick="clearSeq()">Clear</button></div><div style="margin-left:auto;display:flex;gap:6px"><button class="btn" onclick="exportWavReal()">⬇ WAV Réel</button><button class="btn primary" onclick="exportPDF()">PDF</button></div></div>
 
 <div class="workspace">
-<div class="sidebar" id="sidebar">
-<div style="flex:1;min-width:160px">
-<div class="label">IA Composition</div>
-<div style="display:flex;gap:6px;margin-top:6px"><input class="input" id="aiPrompt" placeholder="drill, lo-fi, piano..."><button class="btn ai" onclick="genAI()">✨</button></div>
-</div>
-<div style="flex:1;min-width:160px">
-<div class="label">BPM & Son</div>
-<div style="display:flex;gap:6px;margin-top:6px"><input class="input" id="bpm" type="number" value="120" style="width:70px"><select class="input" id="instrument"><option value="triangle">Bell</option><option value="sine">Piano</option><option value="sawtooth">Lead</option><option value="square">8-bit</option></select></div>
-</div>
-<div style="flex:1;min-width:160px">
-<div class="label">Notes actives</div>
-<div id="notesList" style="margin-top:6px;display:flex;flex-direction:column;gap:4px;font-size:11px;max-height:90px;overflow:auto"></div>
-</div>
+<div class="left">
+<div><div class="label">IA COMPOSITION</div><div style="display:flex;gap:6px;margin-top:6px"><input class="input" id="aiPrompt" placeholder="drill 140, lo-fi..."><button class="btn ai" onclick="genAI()">✨</button></div></div>
+<div><div class="label">PIANO</div><div class="piano" id="piano" style="margin-top:6px"></div></div>
+<div><div class="label">BPM / SON</div><div style="display:flex;gap:6px;margin-top:6px"><input class="input" id="bpm" type="number" value="120" style="width:70px"><select class="input" id="instrument"><option value="triangle">Bell</option><option value="sine">Piano doux</option><option value="sawtooth">Lead</option><option value="square">8-bit</option></select></div></div>
 </div>
 
-<div class="main">
-<div class="controls">
-<span style="font-size:11px;color:#555;display:flex;align-items:center">Clique pour composer • Scroll → pour voir les mesures</span>
-<div style="margin-left:auto;display:flex;gap:6px">
-<button class="btn" onclick="switchView('seq')">Séquenceur</button>
-<button class="btn" onclick="switchView('part')">Partition</button>
+<div class="center">
+<div class="tabs"><button class="tab active" id="tSeq" onclick="switchTab('seq',this)">SÉQUENCEUR — 160 PAS (10 mesures)</button><button class="tab" id="tPart" onclick="switchTab('part',this)">PARTITION</button></div>
+<div class="view" id="seqView">
+<div class="sequencer-scroll" id="seqWrap"><div class="sequencer" id="sequencer"></div></div>
+<p style="font-size:11px;color:#555;padding:8px 12px;flex:none">→ Fais défiler horizontalement pour voir les 10 mesures complètes. Sur mobile, glisse avec le doigt. Cases jaunes = en lecture.</p>
 </div>
-</div>
-<div class="seq-wrap" id="seqWrap"><div class="sequencer" id="sequencer"></div></div>
-<div class="piano" id="piano"></div>
-</div>
+<div class="view" id="partView" style="display:none;overflow:auto;padding:12px"><div id="staff"></div><div style="display:flex;gap:8px;margin-top:10px"><input class="input" id="partTitle" value="Ma Composition C.N." style="flex:1"><select class="input" id="clef" style="width:120px"><option value="treble">Clé de Sol</option><option value="bass">Clé de Fa</option></select></div></div>
 </div>
 
-<div class="bottom">
-<button class="tab active" onclick="switchView('seq');setActiveTab(this)">BEAT</button>
-<button class="tab" onclick="switchView('part');setActiveTab(this)">PARTITION</button>
-<button class="tab" onclick="switchView('mix');setActiveTab(this)">EXPORT</button>
-</div>
-
-<div id="overlayView">
-<div style="padding:12px;display:flex;gap:8px;align-items:center;border-bottom:1px solid #1a1a1a"><button class="btn" onclick="closeOverlay()">← Retour</button><span style="font-weight:700;font-size:13px" id="overlayTitle">Partition</span><div style="margin-left:auto;display:flex;gap:6px"><input class="input" id="partTitle" value="Ma Composition" style="width:160px"><select class="input" id="clef" style="width:90px"><option value="treble">Sol</option><option value="bass">Fa</option></select><button class="btn primary" onclick="window.print()">PDF</button></div></div>
-<div id="staff"></div>
-<div id="mixPanel" style="display:none;padding:20px">
-<h3 style="margin-bottom:16px">Export audio</h3>
-<div style="display:flex;flex-direction:column;gap:12px;max-width:400px">
-<label style="font-size:12px">Volume<input type="range" id="vol" min="0" max="1" step="0.05" value="0.8" style="width:100%"></label>
-<button class="btn primary" style="height:48px" onclick="exportWavReal()">● Exporter WAV réel</button>
-<audio id="player" controls style="width:100%;display:none"></audio>
-<p id="info" style="font-size:11px;opacity:.5">WAV 44.1kHz stéréo — prêt pour CapCut / TikTok / SoundCloud</p>
-</div>
+<div class="right">
+<div class="label">NOTES ACTIVES</div><div id="notesList" style="display:flex;flex-direction:column;gap:4px;font-size:11px;max-height:200px;overflow:auto"></div>
+<div class="label">EXPORT</div><button class="btn primary" style="width:100%" onclick="exportWavReal()">● Export WAV réel</button><audio id="player" controls style="width:100%;display:none;margin-top:8px"></audio><p id="info" style="font-size:10px;color:#666"></p>
 </div>
 </div>
 
 <script>
-const STEPS=32, NOTES=['C5','B4','A4','G4','F4','E4','D4','C4'];
-const FREQ={C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:391.99,A4:440,B4:493.88,C5:523.25};
-let seq=Array(NOTES.length).fill(0).map(()=>Array(STEPS).fill(0));
+const STEPS_PER_MEASURE=16, MEASURES=10, TOTAL_STEPS=STEPS_PER_MEASURE*MEASURES;
 let audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+let notes=['C4','D4','E4','F4','G4','A4','B4','C5'];
+let freq={C4:261.63,D4:293.66,E4:329.63,F4:349.23,G4:391.99,A4:440,B4:493.88,C5:523.25};
+let seq=Array(notes.length).fill(0).map(()=>Array(TOTAL_STEPS).fill(0));
 let cur=0, playing=false, timer=null;
 
+function initPiano(){let p=document.getElementById('piano');p.innerHTML='';notes.forEach((n,i)=>{let k=document.createElement('div');k.className='key';k.innerHTML=n;k.onclick=()=>{playNote(n); addNoteToSeq(i)};p.appendChild(k)})}
 function initSeq(){
- let s=document.getElementById('sequencer');
- s.style.gridTemplateColumns=`56px repeat(${STEPS},46px)`;
- s.innerHTML='';
- s.appendChild(Object.assign(document.createElement('div'),{className:'cell-label',innerText:'',style:'height:28px;position:sticky;top:0;z-index:4'}));
- for(let i=0;i<STEPS;i++){ let h=document.createElement('div'); h.className='cell-label'; h.style.cssText='height:28px;position:sticky;top:0;z-index:2;background:#0f0f0f;color:#666;font-size:9px'; h.innerText=(i%4===0?Math.floor(i/4)+1:''); s.appendChild(h); }
- NOTES.forEach((n,r)=>{
-  let lab=document.createElement('div'); lab.className='cell-label'; lab.style.height='42px'; lab.innerText=n; s.appendChild(lab);
-  for(let c=0;c<STEPS;c++){
-   let cell=document.createElement('div'); cell.className='cell'+(seq[r][c]?' active':''); cell.dataset.r=r; cell.dataset.c=c;
-   let fn=()=>{seq[r][c]^=1; cell.classList.toggle('active'); playNote(n,0.4); update();};
-   cell.addEventListener('pointerdown',e=>{e.preventDefault(); fn();});
+ let s=document.getElementById('sequencer'); s.innerHTML='';
+ s.style.gridTemplateColumns=`56px repeat(${TOTAL_STEPS},36px)`;
+ // header vide
+ let corner=document.createElement('div'); corner.className='seq-label seq-head left'; corner.innerText=''; s.appendChild(corner);
+ for(let i=0;i<TOTAL_STEPS;i++){ let h=document.createElement('div'); h.className='seq-label seq-head'; h.innerText=(i%STEPS_PER_MEASURE===0? 'M'+(i/STEPS_PER_MEASURE+1) : (i%STEPS_PER_MEASURE+1)); s.appendChild(h); }
+ notes.forEach((n,r)=>{
+  let lab=document.createElement('div'); lab.className='seq-label'; lab.innerText=n; s.appendChild(lab);
+  for(let c=0;c<TOTAL_STEPS;c++){
+   let cell=document.createElement('div'); cell.className='seq-cell'+(seq[r][c]?' active':''); cell.dataset.row=r; cell.dataset.col=c;
+   cell.addEventListener('pointerdown',e=>{e.preventDefault(); seq[r][c]^=1; cell.classList.toggle('active'); update();});
    s.appendChild(cell);
   }
  });
 }
-function initPiano(){
- let p=document.getElementById('piano'); p.innerHTML='';
- NOTES.slice().reverse().forEach(n=>{
-  let k=document.createElement('div'); k.className='key'; k.innerText=n;
-  k.addEventListener('pointerdown',e=>{e.preventDefault(); playNote(n,0.6); let r=NOTES.indexOf(n); if(r>=0){ seq[r][cur]=1; initSeq(); update(); }});
-  p.appendChild(k);
- });
-}
-function playNote(note,dur=0.5,when=0,ctx=audioCtx,dest=null){
- let o=ctx.createOscillator(), g=ctx.createGain();
- o.type=document.getElementById('instrument').value; o.frequency.value=FREQ[note]||440;
- let v=parseFloat(document.getElementById('vol')?.value||0.8);
- g.gain.setValueAtTime(0,when); g.gain.linearRampToValueAtTime(v,when+0.01); g.gain.exponentialRampToValueAtTime(0.001,when+dur);
- o.connect(g); g.connect(dest||ctx.destination); o.start(when); o.stop(when+dur);
-}
+function playNote(n,type=document.getElementById('instrument').value, when=0, ctx=audioCtx, dest=null){let o=ctx.createOscillator(),g=ctx.createGain();o.type=type;o.frequency.value=freq[n]||440;o.connect(g);g.connect(dest||ctx.destination);g.gain.setValueAtTime(0.8, (ctx.currentTime||0)+when);g.gain.exponentialRampToValueAtTime(0.01,(ctx.currentTime||0)+when+0.8);o.start((ctx.currentTime||0)+when);o.stop((ctx.currentTime||0)+when+0.8)}
+function addNoteToSeq(r){ seq[r][cur]=1; initSeq(); update(); }
 function play(){
- if(audioCtx.state==='suspended') audioCtx.resume();
- let btn=document.getElementById('playBtn');
- if(playing){ stop(); btn.innerText='▶ Play'; return; }
- playing=true; btn.innerText='⏸ Pause'; cur=0;
+ if(playing) return; if(audioCtx.state==='suspended') audioCtx.resume(); playing=true; cur=0; document.getElementById('playBtn').innerText='⏸ Pause';
  timer=setInterval(()=>{
-  document.querySelectorAll('.cell').forEach(c=>c.classList.remove('playhead'));
-  document.querySelectorAll(`[data-c="${cur}"]`).forEach(c=>c.classList.add('playhead'));
-  if(window.innerWidth<=768) document.getElementById('seqWrap').scrollTo({left:cur*46-100, behavior:'smooth'});
-  NOTES.forEach((n,r)=>{ if(seq[r][cur]) playNote(n); });
-  cur=(cur+1)%STEPS;
+  document.querySelectorAll('.seq-cell').forEach(c=>c.classList.remove('playhead'));
+  document.querySelectorAll(`[data-col="${cur}"]`).forEach(c=>c.classList.add('playhead'));
+  document.getElementById('seqWrap').scrollTo({left:cur*36-200, behavior:'auto'});
+  notes.forEach((n,r)=>{ if(seq[r][cur]) playNote(n); });
+  cur=(cur+1)%TOTAL_STEPS;
  }, 60/document.getElementById('bpm').value*1000/4);
 }
-function stop(){ playing=false; clearInterval(timer); document.querySelectorAll('.cell').forEach(c=>c.classList.remove('playhead')); }
-function clearSeq(){ seq=Array(NOTES.length).fill(0).map(()=>Array(STEPS).fill(0)); initSeq(); update(); }
+function stop(){ playing=false; clearInterval(timer); document.querySelectorAll('.seq-cell').forEach(c=>c.classList.remove('playhead')); document.getElementById('playBtn').innerText='▶ Play'; }
+function clearSeq(){ seq=Array(notes.length).fill(0).map(()=>Array(TOTAL_STEPS).fill(0)); initSeq(); update(); }
 function update(){
- let active=[]; seq.forEach((row,r)=>row.forEach((v,c)=>{ if(v) active.push({note:NOTES[r],pos:c})}));
+ let active=[]; seq.forEach((row,r)=>row.forEach((v,c)=>{ if(v) active.push({note:notes[r],pos:c})}));
  active.sort((a,b)=>a.pos-b.pos);
- document.getElementById('notesList').innerHTML=active.slice(0,8).map(n=>`<div style="background:#1a1a1a;padding:4px 8px;border-radius:6px;display:flex;justify-content:space-between"><span>${n.note}</span><span style="opacity:.5">${n.pos+1}</span></div>`).join('')||'<span style="opacity:.3">Aucune note</span>';
+ document.getElementById('notesList').innerHTML=active.slice(0,30).map(n=>`<div style="background:#1a1a1a;padding:5px 8px;border-radius:6px;display:flex;justify-content:space-between"><span>${n.note}</span><span style="opacity:.5">M${Math.floor(n.pos/STEPS_PER_MEASURE)+1} T${n.pos%STEPS_PER_MEASURE+1}</span></div>`).join('')||'<span style="opacity:.3">Aucune note</span>';
  renderStaff(active);
+ localStorage.setItem('cn-music-seq', JSON.stringify(seq));
 }
 function renderStaff(active){
  try{
   let div=document.getElementById('staff'); div.innerHTML='';
-  let VF=Vex.Flow, r=new VF.Renderer(div,VF.Renderer.Backends.SVG); r.resize(740,160);
-  let ctx=r.getContext(), st=new VF.Stave(10,0,700); st.addClef(document.getElementById('clef').value).setContext(ctx).draw();
+  let VF=Vex.Flow; let renderer=new VF.Renderer(div,VF.Renderer.Backends.SVG); renderer.resize(800,200);
+  let ctx=renderer.getContext(); let stave=new VF.Stave(10,0,750); stave.addClef(document.getElementById('clef').value).setContext(ctx).draw();
   if(!active.length) return;
   let vn=active.slice(0,8).map(n=> new VF.StaveNote({clef:document.getElementById('clef').value, keys:[n.note.toLowerCase().replace('4','/4').replace('5','/5')], duration:"q"}));
   let voice=new VF.Voice({num_beats:vn.length, beat_value:4}); voice.addTickables(vn);
-  new VF.Formatter().joinVoices([voice]).format([voice],660); voice.draw(ctx,st);
+  new VF.Formatter().joinVoices([voice]).format([voice],700); voice.draw(ctx,stave);
  }catch(e){}
 }
 async function exportWavReal(){
- let bpm=parseInt(document.getElementById('bpm').value)||120, stepDur=60/bpm/4, total=stepDur*STEPS;
- let off=new OfflineAudioContext(2, 44100*total, 44100), vol=parseFloat(document.getElementById('vol')?.value||0.8);
- seq.forEach((row,r)=>row.forEach((v,c)=>{ if(v){ let at=c*stepDur; let o=off.createOscillator(), g=off.createGain(); o.type=document.getElementById('instrument').value; o.frequency.value=FREQ[NOTES[r]]; g.gain.setValueAtTime(0,at); g.gain.linearRampToValueAtTime(vol,at+0.01); g.gain.exponentialRampToValueAtTime(0.001,at+0.8); o.connect(g); g.connect(off.destination); o.start(at); o.stop(at+0.8); }}));
+ let bpm=parseInt(document.getElementById('bpm').value)||120, stepDur=60/bpm/4, total=stepDur*TOTAL_STEPS;
+ let off=new OfflineAudioContext(2, 44100*total, 44100);
+ seq.forEach((row,r)=>row.forEach((v,c)=>{ if(v){ let at=c*stepDur; let o=off.createOscillator(), g=off.createGain(); o.type=document.getElementById('instrument').value; o.frequency.value=freq[notes[r]]; g.gain.setValueAtTime(0,at); g.gain.linearRampToValueAtTime(0.8,at+0.01); g.gain.exponentialRampToValueAtTime(0.001,at+0.8); o.connect(g); g.connect(off.destination); o.start(at); o.stop(at+0.8); }}));
  let rendered=await off.startRendering();
- let ab=toWav(rendered), blob=new Blob([ab],{type:'audio/wav'}), url=URL.createObjectURL(blob);
+ let wav=toWav(rendered), blob=new Blob([wav],{type:'audio/wav'}), url=URL.createObjectURL(blob);
  let a=document.createElement('a'); a.href=url; a.download=(document.getElementById('partTitle').value||'CN_Beat')+'.wav'; a.click();
- let player=document.getElementById('player'); player.src=url; player.style.display='block'; switchView('mix');
- document.getElementById('info').innerText='✅ WAV créé: '+(blob.size/1024).toFixed(0)+' Ko';
+ let player=document.getElementById('player'); player.src=url; player.style.display='block'; document.getElementById('info').innerText='✅ WAV 44.1kHz: '+(blob.size/1024).toFixed(0)+' Ko — 10 mesures';
 }
 function toWav(buf){ let num=buf.numberOfChannels, sr=buf.sampleRate, len=buf.length*num*2+44, ab=new ArrayBuffer(len), v=new DataView(ab), o=0; let w=s=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i)); o+=s.length;}; w('RIFF'); v.setUint32(o,36+buf.length*num*2,true); o+=4; w('WAVE'); w('fmt '); v.setUint32(o,16,true); o+=4; v.setUint16(o,1,true); o+=2; v.setUint16(o,num,true); o+=2; v.setUint32(o,sr,true); o+=4; v.setUint32(o,sr*num*2,true); o+=4; v.setUint16(o,num*2,true); o+=2; v.setUint16(o,16,true); o+=2; w('data'); v.setUint32(o,buf.length*num*2,true); o+=4; for(let i=0;i<buf.length;i++) for(let c=0;c<num;c++){ let s=Math.max(-1,Math.min(1,buf.getChannelData(c)[i])); v.setInt16(o,s<0?s*0x8000:s*0x7FFF,true); o+=2; } return ab; }
 function genAI(){
  let p=(document.getElementById('aiPrompt').value||'').toLowerCase(); clearSeq();
- let pat=p.includes('drill')?[0,1,3,5]:p.includes('lo-fi')?[2,4,6]:[0,2,4,6];
- for(let c=0;c<STEPS;c++) if(Math.random()>0.62){ let r=pat[Math.floor(Math.random()*pat.length)]; seq[r][c]=1; }
+ let pat=p.includes('drill')?[0,1,4,6]:p.includes('lo-fi')?[0,2,4,6]:[0,2,4,7];
+ for(let c=0;c<TOTAL_STEPS;c++) if(Math.random()>0.75){ let r=pat[Math.floor(Math.random()*pat.length)]; seq[r][c]=1; }
  initSeq(); update();
 }
-function switchView(v){
- let ov=document.getElementById('overlayView'); ov.style.display='flex';
- document.getElementById('staff').style.display=v==='part'?'block':'none';
- document.getElementById('mixPanel').style.display=v==='mix'?'block':'none';
- document.getElementById('overlayTitle').innerText=v==='part'?'Partition':v==='mix'?'Export WAV':'Séquenceur';
- if(v==='seq') closeOverlay();
- if(v==='part') update();
-}
-function closeOverlay(){ document.getElementById('overlayView').style.display='none'; }
-function setActiveTab(el){ document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active')); el.classList.add('active'); }
+function switchTab(t,el){ document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active')); el.classList.add('active'); document.getElementById('seqView').style.display=t==='seq'?'flex':'none'; document.getElementById('partView').style.display=t==='part'?'flex':'none'; if(t==='part') update(); }
+function exportPDF(){ window.print(); }
 
-initSeq(); initPiano(); update();
+(function(){ let s=localStorage.getItem('cn-music-seq'); if(s){ try{ seq=JSON.parse(s); if(seq[0].length!==TOTAL_STEPS) throw 'resize'; }catch(e){ seq=Array(notes.length).fill(0).map(()=>Array(TOTAL_STEPS).fill(0)); } } initPiano(); initSeq(); update(); })();
 </script>
 </body>
 </html>
